@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace UniversalByteRemover
@@ -10,11 +11,12 @@ namespace UniversalByteRemover
         public ByteRemover()
         {
             InitializeComponent();
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
         }
 
         private void RadioButtonMode_CheckedChanged(object sender, EventArgs e)
         {
-            // 禁用所有输入框
             textBoxByteSequence.Enabled = false;
             textBoxHexAddress.Enabled = false;
             textBoxStartAddress.Enabled = false;
@@ -62,7 +64,6 @@ namespace UniversalByteRemover
         {
             if (!string.IsNullOrEmpty(textBoxPath.Text) && (File.Exists(textBoxPath.Text) || Directory.Exists(textBoxPath.Text)))
             {
-                // 启用相关操作按钮和选项
                 buttonProcess.Enabled = true;
                 foreach (RadioButton rb in new RadioButton[] { radioButtonMode1, radioButtonMode2, radioButtonMode3, radioButtonMode4, radioButtonMode5, radioButtonMode6, radioButtonMode7, radioButtonMode8 })
                 {
@@ -71,7 +72,6 @@ namespace UniversalByteRemover
             }
             else
             {
-                // 禁用相关操作按钮和选项
                 buttonProcess.Enabled = false;
                 foreach (RadioButton rb in new RadioButton[] { radioButtonMode1, radioButtonMode2, radioButtonMode3, radioButtonMode4, radioButtonMode5, radioButtonMode6, radioButtonMode7, radioButtonMode8 })
                 {
@@ -80,31 +80,50 @@ namespace UniversalByteRemover
             }
         }
 
-        private void buttonProcess_Click(object sender, EventArgs e)
+        private async void buttonProcess_Click(object sender, EventArgs e)
         {
             string inputPath = textBoxPath.Text;
             if (!string.IsNullOrEmpty(inputPath))
             {
-                if (File.Exists(inputPath))
+                buttonProcess.Enabled = false;
+                buttonBrowse.Enabled = false;
+                buttonClear.Enabled = false;
+
+                try
                 {
-                    ProcessSingleFile(inputPath);
-                }
-                else if (Directory.Exists(inputPath))
-                {
-                    string[] files = Directory.GetFiles(inputPath, "*", SearchOption.AllDirectories);
-                    foreach (string file in files)
+                    if (File.Exists(inputPath))
                     {
-                        ProcessSingleFile(file);
+                        await ProcessSingleFileAsync(inputPath, 1);
+                    }
+                    else if (Directory.Exists(inputPath))
+                    {
+                        string[] files = Directory.GetFiles(inputPath, "*", SearchOption.AllDirectories);
+                        int fileCount = 1;
+                        foreach (string file in files)
+                        {
+                            await ProcessSingleFileAsync(file, fileCount);
+                            fileCount++;
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("指定的文件路径不存在，请检查输入。");
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    MessageBox.Show("指定的文件路径不存在，请检查输入。");
+                    MessageBox.Show($"处理过程中发生错误: {ex.Message}");
+                }
+                finally
+                {
+                    buttonProcess.Enabled = true;
+                    buttonBrowse.Enabled = true;
+                    buttonClear.Enabled = true;
                 }
             }
         }
 
-        private void ProcessSingleFile(string filePath)
+        private async Task ProcessSingleFileAsync(string filePath, int fileNumber)
         {
             string? parentDirectory = Path.GetDirectoryName(filePath);
 
@@ -117,17 +136,31 @@ namespace UniversalByteRemover
                     Directory.CreateDirectory(extractedDirectory);
                 }
 
-                byte[] fileBytes = File.ReadAllBytes(filePath);
+                byte[] fileBytes = await Task.Run(() => File.ReadAllBytes(filePath));
 
-                byte[] resultBytes = ProcessBytes(fileBytes);
+                byte[] resultBytes = await Task.Run(() => ProcessBytes(fileBytes));
 
-                string outputFileName = Path.ChangeExtension(Path.GetFileName(filePath), textBoxFileFormat.Text);
+                string originalFileName = Path.GetFileNameWithoutExtension(filePath);
+                string userExtension = textBoxFileFormat.Text.Trim().TrimStart('.');
+                string outputFileName = $"{originalFileName}_{fileNumber}.{userExtension}";
 
                 string outputFilePath = Path.Combine(extractedDirectory, outputFileName);
 
-                File.WriteAllBytes(outputFilePath, resultBytes);
+                await Task.Run(() => File.WriteAllBytes(outputFilePath, resultBytes));
 
-                richTextBoxOutput.Text += $"处理完成，结果已保存到 {outputFilePath}\n";
+                if (richTextBoxOutput.InvokeRequired)
+                {
+                    richTextBoxOutput.Invoke(new Action(() =>
+                    {
+                        richTextBoxOutput.Text += $"[{fileNumber}] 处理完成，结果已保存到 {outputFilePath}\n";
+                        richTextBoxOutput.ScrollToCaret();
+                    }));
+                }
+                else
+                {
+                    richTextBoxOutput.Text += $"[{fileNumber}] 处理完成，结果已保存到 {outputFilePath}\n";
+                    richTextBoxOutput.ScrollToCaret();
+                }
             }
             else
             {
@@ -303,6 +336,7 @@ namespace UniversalByteRemover
             }
             return -1;
         }
+
         private void buttonClear_Click(object sender, EventArgs e)
         {
             richTextBoxOutput.Clear();
@@ -314,6 +348,19 @@ namespace UniversalByteRemover
             {
                 folderDialog.Description = "请选择一个文件夹";
                 folderDialog.ShowNewFolderButton = true;
+
+                if (!string.IsNullOrEmpty(textBoxPath.Text) && Directory.Exists(textBoxPath.Text))
+                {
+                    folderDialog.SelectedPath = textBoxPath.Text;
+                }
+                else if (!string.IsNullOrEmpty(textBoxPath.Text) && File.Exists(textBoxPath.Text))
+                {
+                    string? directoryPath = Path.GetDirectoryName(textBoxPath.Text);
+                    if (!string.IsNullOrEmpty(directoryPath) && Directory.Exists(directoryPath))
+                    {
+                        folderDialog.SelectedPath = directoryPath;
+                    }
+                }
 
                 if (folderDialog.ShowDialog() == DialogResult.OK)
                 {
