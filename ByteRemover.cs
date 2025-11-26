@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Text;
 
 namespace UniversalByteRemover
 {
@@ -13,6 +9,153 @@ namespace UniversalByteRemover
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
+            EnableDragDropSupport();
+        }
+
+        private void EnableDragDropSupport()
+        {
+            textBoxPath.AllowDrop = true;
+            textBoxPath.DragEnter += TextBoxPath_DragEnter;
+            textBoxPath.DragDrop += TextBoxPath_DragDrop;
+            textBoxPath.DragLeave += TextBoxPath_DragLeave;
+
+            this.AllowDrop = true;
+            this.DragEnter += Form_DragEnter;
+            this.DragDrop += Form_DragDrop;
+        }
+
+        private void TextBoxPath_DragEnter(object? sender, DragEventArgs e)
+        {
+            if (textBoxPath == null) return;
+
+            if (e.Data?.GetDataPresent(DataFormats.FileDrop) == true)
+            {
+                string[]? files = e.Data.GetData(DataFormats.FileDrop) as string[];
+
+                if (files != null && files.Length == 1 && (Directory.Exists(files[0]) || File.Exists(files[0])))
+                {
+                    e.Effect = DragDropEffects.Copy;
+                    textBoxPath.BackColor = System.Drawing.Color.LightGreen;
+                }
+                else
+                {
+                    e.Effect = DragDropEffects.None;
+                }
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        private void TextBoxPath_DragDrop(object? sender, DragEventArgs e)
+        {
+            if (textBoxPath == null) return;
+
+            textBoxPath.BackColor = System.Drawing.SystemColors.Window;
+
+            if (e.Data?.GetDataPresent(DataFormats.FileDrop) == true)
+            {
+                string[]? files = e.Data.GetData(DataFormats.FileDrop) as string[];
+
+                if (files != null && files.Length == 1 && (Directory.Exists(files[0]) || File.Exists(files[0])))
+                {
+                    textBoxPath.Text = files[0];
+                    AppendToOutput($"已通过拖放选择路径:{files[0]}");
+                    TriggerPathChanged();
+                }
+                else
+                {
+                    AppendToOutput("错误:请拖放单个文件或文件夹");
+                }
+            }
+        }
+
+        private void TextBoxPath_DragLeave(object? sender, EventArgs e)
+        {
+            if (textBoxPath == null) return;
+
+            textBoxPath.BackColor = System.Drawing.SystemColors.Window;
+        }
+
+        private void Form_DragEnter(object? sender, DragEventArgs e)
+        {
+            if (e.Data?.GetDataPresent(DataFormats.FileDrop) == true)
+            {
+                string[]? files = e.Data.GetData(DataFormats.FileDrop) as string[];
+
+                if (files != null && files.Length == 1 && (Directory.Exists(files[0]) || File.Exists(files[0])))
+                {
+                    e.Effect = DragDropEffects.Copy;
+                }
+                else
+                {
+                    e.Effect = DragDropEffects.None;
+                }
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        private void Form_DragDrop(object? sender, DragEventArgs e)
+        {
+            if (e.Data?.GetDataPresent(DataFormats.FileDrop) == true)
+            {
+                string[]? files = e.Data.GetData(DataFormats.FileDrop) as string[];
+
+                if (files != null && files.Length == 1 && (Directory.Exists(files[0]) || File.Exists(files[0])))
+                {
+                    textBoxPath.Text = files[0];
+                    AppendToOutput($"已通过窗体拖放选择路径:{files[0]}");
+                    TriggerPathChanged();
+                }
+                else
+                {
+                    AppendToOutput("错误:请拖放单个文件或文件夹到路径文本框或窗体");
+                }
+            }
+        }
+
+        private void AppendToOutput(string message)
+        {
+            if (richTextBoxOutput.InvokeRequired)
+            {
+                richTextBoxOutput.Invoke(new Action<string>(AppendToOutput), message);
+                return;
+            }
+
+            richTextBoxOutput.AppendText($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}\n");
+            richTextBoxOutput.ScrollToCaret();
+        }
+
+        private void TriggerPathChanged()
+        {
+            if (!string.IsNullOrEmpty(textBoxPath.Text) && (File.Exists(textBoxPath.Text) || Directory.Exists(textBoxPath.Text)))
+            {
+                buttonProcess.Enabled = true;
+                foreach (RadioButton rb in new RadioButton[] {
+                    radioButtonMode1, radioButtonMode2, radioButtonMode3, radioButtonMode4,
+                    radioButtonMode5, radioButtonMode6, radioButtonMode7, radioButtonMode8,
+                    radioButtonMode9
+                })
+                {
+                    rb.Enabled = true;
+                }
+            }
+            else
+            {
+                buttonProcess.Enabled = false;
+                foreach (RadioButton rb in new RadioButton[] {
+                    radioButtonMode1, radioButtonMode2, radioButtonMode3, radioButtonMode4,
+                    radioButtonMode5, radioButtonMode6, radioButtonMode7, radioButtonMode8,
+                    radioButtonMode9
+                })
+                {
+                    rb.Enabled = false;
+                }
+            }
         }
 
         private void RadioButtonMode_CheckedChanged(object sender, EventArgs e)
@@ -23,6 +166,7 @@ namespace UniversalByteRemover
             textBoxEndAddress.Enabled = false;
             textBoxByteValue.Enabled = false;
             textBoxNumber.Enabled = false;
+            textBoxString.Enabled = false;
             textBoxFileFormat.Enabled = false;
             textBoxFileFormat.Text = "";
             buttonProcess.Enabled = false;
@@ -53,6 +197,11 @@ namespace UniversalByteRemover
                 textBoxNumber.Enabled = true;
                 textBoxFileFormat.Enabled = true;
             }
+            else if (radioButtonMode9.Checked)
+            {
+                textBoxString.Enabled = true;
+                textBoxFileFormat.Enabled = true;
+            }
         }
 
         private void textBoxFileFormat_TextChanged(object sender, EventArgs e)
@@ -62,22 +211,7 @@ namespace UniversalByteRemover
 
         private void textBoxPath_TextChanged(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(textBoxPath.Text) && (File.Exists(textBoxPath.Text) || Directory.Exists(textBoxPath.Text)))
-            {
-                buttonProcess.Enabled = true;
-                foreach (RadioButton rb in new RadioButton[] { radioButtonMode1, radioButtonMode2, radioButtonMode3, radioButtonMode4, radioButtonMode5, radioButtonMode6, radioButtonMode7, radioButtonMode8 })
-                {
-                    rb.Enabled = true;
-                }
-            }
-            else
-            {
-                buttonProcess.Enabled = false;
-                foreach (RadioButton rb in new RadioButton[] { radioButtonMode1, radioButtonMode2, radioButtonMode3, radioButtonMode4, radioButtonMode5, radioButtonMode6, radioButtonMode7, radioButtonMode8 })
-                {
-                    rb.Enabled = false;
-                }
-            }
+            TriggerPathChanged();
         }
 
         private async void buttonProcess_Click(object sender, EventArgs e)
@@ -112,7 +246,7 @@ namespace UniversalByteRemover
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"处理过程中发生错误: {ex.Message}");
+                    MessageBox.Show($"处理过程中发生错误:{ex.Message}");
                 }
                 finally
                 {
@@ -152,13 +286,13 @@ namespace UniversalByteRemover
                 {
                     richTextBoxOutput.Invoke(new Action(() =>
                     {
-                        richTextBoxOutput.Text += $"[{fileNumber}] 处理完成，结果已保存到 {outputFilePath}\n";
+                        richTextBoxOutput.Text += $"[{fileNumber}]处理完成，结果已保存到{outputFilePath}\n";
                         richTextBoxOutput.ScrollToCaret();
                     }));
                 }
                 else
                 {
-                    richTextBoxOutput.Text += $"[{fileNumber}] 处理完成，结果已保存到 {outputFilePath}\n";
+                    richTextBoxOutput.Text += $"[{fileNumber}]处理完成，结果已保存到{outputFilePath}\n";
                     richTextBoxOutput.ScrollToCaret();
                 }
             }
@@ -295,6 +429,19 @@ namespace UniversalByteRemover
                     if (count < fileBytes.Length)
                     {
                         return new ArraySegment<byte>(fileBytes, count, fileBytes.Length - count).ToArray();
+                    }
+                }
+            }
+            else if (radioButtonMode9.Checked)
+            {
+                string targetString = textBoxString.Text.Trim();
+                if (!string.IsNullOrEmpty(targetString))
+                {
+                    byte[] stringBytes = Encoding.UTF8.GetBytes(targetString);
+                    int index = FindByteSequenceIndex(fileBytes, stringBytes);
+                    if (index != -1)
+                    {
+                        return new ArraySegment<byte>(fileBytes, index, fileBytes.Length - index).ToArray();
                     }
                 }
             }
