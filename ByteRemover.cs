@@ -220,7 +220,6 @@ namespace UniversalByteRemover
             if (!string.IsNullOrEmpty(inputPath))
             {
                 buttonProcess.Enabled = false;
-                buttonBrowse.Enabled = false;
                 buttonClear.Enabled = false;
 
                 try
@@ -251,7 +250,6 @@ namespace UniversalByteRemover
                 finally
                 {
                     buttonProcess.Enabled = true;
-                    buttonBrowse.Enabled = true;
                     buttonClear.Enabled = true;
                 }
             }
