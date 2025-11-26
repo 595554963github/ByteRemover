@@ -6,17 +6,11 @@
 		<Nullable>enable</Nullable>
 		<UseWindowsForms>true</UseWindowsForms>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<ApplicationIcon>涅普缇努诺瓦露.ico</ApplicationIcon>
 		<SignAssembly>False</SignAssembly>
 		<GenerateDependencyFile>false</GenerateDependencyFile>
 	</PropertyGroup>
-
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DebugType>embedded</DebugType>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<Content Include="涅普缇努诺瓦露.ico" />
-	</ItemGroup>
 
 </Project>
