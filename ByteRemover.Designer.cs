@@ -37,7 +37,6 @@ namespace UniversalByteRemover
         private System.Windows.Forms.Label labelFileFormatPrompt;
         private System.Windows.Forms.TextBox textBoxFileFormat;
         private System.Windows.Forms.RichTextBox richTextBoxOutput;
-        private System.Windows.Forms.Button buttonBrowse;
         private System.Windows.Forms.Button buttonClear;
 
         protected override void Dispose(bool disposing)
@@ -82,24 +81,24 @@ namespace UniversalByteRemover
             labelFileFormatPrompt = new Label();
             textBoxFileFormat = new TextBox();
             richTextBoxOutput = new RichTextBox();
-            buttonBrowse = new Button();
             buttonClear = new Button();
             SuspendLayout();
             // 
             // labelPathPrompt
             // 
             labelPathPrompt.AutoSize = true;
+            labelPathPrompt.ForeColor = Color.Red;
             labelPathPrompt.Location = new Point(13, 15);
             labelPathPrompt.Name = "labelPathPrompt";
-            labelPathPrompt.Size = new Size(131, 17);
+            labelPathPrompt.Size = new Size(128, 17);
             labelPathPrompt.TabIndex = 0;
-            labelPathPrompt.Text = "请输入一个有效的路径:";
+            labelPathPrompt.Text = "请拖放一个文件夹到此";
             // 
             // textBoxPath
             // 
             textBoxPath.Location = new Point(144, 11);
             textBoxPath.Name = "textBoxPath";
-            textBoxPath.Size = new Size(250, 23);
+            textBoxPath.Size = new Size(320, 23);
             textBoxPath.TabIndex = 1;
             textBoxPath.TextChanged += textBoxPath_TextChanged;
             // 
@@ -111,11 +110,12 @@ namespace UniversalByteRemover
             labelBackupPrompt.Name = "labelBackupPrompt";
             labelBackupPrompt.Size = new Size(236, 17);
             labelBackupPrompt.TabIndex = 3;
-            labelBackupPrompt.Text = "请放心操作，该操作不会破坏您的游戏数据";
+            labelBackupPrompt.Text = "请放心操作，该工具不会破坏您的游戏数据";
             // 
             // labelModePrompt
             // 
             labelModePrompt.AutoSize = true;
+            labelModePrompt.ForeColor = Color.DeepSkyBlue;
             labelModePrompt.Location = new Point(13, 76);
             labelModePrompt.Name = "labelModePrompt";
             labelModePrompt.Size = new Size(155, 17);
@@ -224,6 +224,7 @@ namespace UniversalByteRemover
             // labelByteSequencePrompt
             // 
             labelByteSequencePrompt.AutoSize = true;
+            labelByteSequencePrompt.ForeColor = Color.Black;
             labelByteSequencePrompt.Location = new Point(13, 357);
             labelByteSequencePrompt.Name = "labelByteSequencePrompt";
             labelByteSequencePrompt.Size = new Size(164, 17);
@@ -241,6 +242,7 @@ namespace UniversalByteRemover
             // labelStringPrompt
             // 
             labelStringPrompt.AutoSize = true;
+            labelStringPrompt.ForeColor = Color.Black;
             labelStringPrompt.Location = new Point(13, 390);
             labelStringPrompt.Name = "labelStringPrompt";
             labelStringPrompt.Size = new Size(104, 17);
@@ -258,6 +260,7 @@ namespace UniversalByteRemover
             // labelHexAddressPrompt
             // 
             labelHexAddressPrompt.AutoSize = true;
+            labelHexAddressPrompt.ForeColor = Color.Black;
             labelHexAddressPrompt.Location = new Point(13, 429);
             labelHexAddressPrompt.Name = "labelHexAddressPrompt";
             labelHexAddressPrompt.Size = new Size(227, 17);
@@ -275,6 +278,7 @@ namespace UniversalByteRemover
             // labelStartAddressPrompt
             // 
             labelStartAddressPrompt.AutoSize = true;
+            labelStartAddressPrompt.ForeColor = Color.Black;
             labelStartAddressPrompt.Location = new Point(13, 465);
             labelStartAddressPrompt.Name = "labelStartAddressPrompt";
             labelStartAddressPrompt.Size = new Size(56, 17);
@@ -284,15 +288,16 @@ namespace UniversalByteRemover
             // textBoxStartAddress
             // 
             textBoxStartAddress.Enabled = false;
-            textBoxStartAddress.Location = new Point(75, 461);
+            textBoxStartAddress.Location = new Point(69, 461);
             textBoxStartAddress.Name = "textBoxStartAddress";
-            textBoxStartAddress.Size = new Size(112, 23);
+            textBoxStartAddress.Size = new Size(160, 23);
             textBoxStartAddress.TabIndex = 23;
             // 
             // labelEndAddressPrompt
             // 
             labelEndAddressPrompt.AutoSize = true;
-            labelEndAddressPrompt.Location = new Point(200, 465);
+            labelEndAddressPrompt.ForeColor = Color.Black;
+            labelEndAddressPrompt.Location = new Point(242, 465);
             labelEndAddressPrompt.Name = "labelEndAddressPrompt";
             labelEndAddressPrompt.Size = new Size(56, 17);
             labelEndAddressPrompt.TabIndex = 24;
@@ -301,43 +306,45 @@ namespace UniversalByteRemover
             // textBoxEndAddress
             // 
             textBoxEndAddress.Enabled = false;
-            textBoxEndAddress.Location = new Point(263, 461);
+            textBoxEndAddress.Location = new Point(304, 462);
             textBoxEndAddress.Name = "textBoxEndAddress";
-            textBoxEndAddress.Size = new Size(112, 23);
+            textBoxEndAddress.Size = new Size(160, 23);
             textBoxEndAddress.TabIndex = 25;
             // 
             // labelByteValuePrompt
             // 
             labelByteValuePrompt.AutoSize = true;
+            labelByteValuePrompt.ForeColor = Color.Black;
             labelByteValuePrompt.Location = new Point(13, 501);
             labelByteValuePrompt.Name = "labelByteValuePrompt";
-            labelByteValuePrompt.Size = new Size(128, 17);
+            labelByteValuePrompt.Size = new Size(140, 17);
             labelByteValuePrompt.TabIndex = 26;
-            labelByteValuePrompt.Text = "请输入要删除的字节值";
+            labelByteValuePrompt.Text = "请输入一个要删除的字节";
             // 
             // textBoxByteValue
             // 
             textBoxByteValue.Enabled = false;
-            textBoxByteValue.Location = new Point(144, 497);
+            textBoxByteValue.Location = new Point(159, 497);
             textBoxByteValue.Name = "textBoxByteValue";
-            textBoxByteValue.Size = new Size(320, 23);
+            textBoxByteValue.Size = new Size(305, 23);
             textBoxByteValue.TabIndex = 27;
             // 
             // labelNumberPrompt
             // 
             labelNumberPrompt.AutoSize = true;
+            labelNumberPrompt.ForeColor = Color.Black;
             labelNumberPrompt.Location = new Point(13, 537);
             labelNumberPrompt.Name = "labelNumberPrompt";
-            labelNumberPrompt.Size = new Size(92, 17);
+            labelNumberPrompt.Size = new Size(140, 17);
             labelNumberPrompt.TabIndex = 28;
-            labelNumberPrompt.Text = "请输入一个数字";
+            labelNumberPrompt.Text = "请输入要删除的字节数量";
             // 
             // textBoxNumber
             // 
             textBoxNumber.Enabled = false;
-            textBoxNumber.Location = new Point(144, 533);
+            textBoxNumber.Location = new Point(159, 533);
             textBoxNumber.Name = "textBoxNumber";
-            textBoxNumber.Size = new Size(320, 23);
+            textBoxNumber.Size = new Size(305, 23);
             textBoxNumber.TabIndex = 29;
             // 
             // buttonProcess
@@ -355,6 +362,7 @@ namespace UniversalByteRemover
             // labelFileFormatPrompt
             // 
             labelFileFormatPrompt.AutoSize = true;
+            labelFileFormatPrompt.ForeColor = Color.Black;
             labelFileFormatPrompt.Location = new Point(12, 575);
             labelFileFormatPrompt.Name = "labelFileFormatPrompt";
             labelFileFormatPrompt.Size = new Size(152, 17);
@@ -364,9 +372,9 @@ namespace UniversalByteRemover
             // textBoxFileFormat
             // 
             textBoxFileFormat.Enabled = false;
-            textBoxFileFormat.Location = new Point(183, 572);
+            textBoxFileFormat.Location = new Point(170, 572);
             textBoxFileFormat.Name = "textBoxFileFormat";
-            textBoxFileFormat.Size = new Size(281, 23);
+            textBoxFileFormat.Size = new Size(294, 23);
             textBoxFileFormat.TabIndex = 32;
             textBoxFileFormat.TextChanged += textBoxFileFormat_TextChanged;
             // 
@@ -377,17 +385,6 @@ namespace UniversalByteRemover
             richTextBoxOutput.Size = new Size(349, 581);
             richTextBoxOutput.TabIndex = 33;
             richTextBoxOutput.Text = "";
-            // 
-            // buttonBrowse
-            // 
-            buttonBrowse.ForeColor = Color.Red;
-            buttonBrowse.Location = new Point(400, 12);
-            buttonBrowse.Name = "buttonBrowse";
-            buttonBrowse.Size = new Size(75, 23);
-            buttonBrowse.TabIndex = 34;
-            buttonBrowse.Text = "浏览";
-            buttonBrowse.UseVisualStyleBackColor = true;
-            buttonBrowse.Click += buttonBrowse_Click;
             // 
             // buttonClear
             // 
@@ -406,7 +403,6 @@ namespace UniversalByteRemover
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(842, 644);
             Controls.Add(buttonClear);
-            Controls.Add(buttonBrowse);
             Controls.Add(richTextBoxOutput);
             Controls.Add(textBoxFileFormat);
             Controls.Add(labelFileFormatPrompt);
