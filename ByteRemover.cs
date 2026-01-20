@@ -127,8 +127,21 @@ namespace UniversalByteRemover
             }
 
             richTextBoxOutput.AppendText($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}\n");
+        }
+
+        private void AppendToOutputWithoutTimestamp(string message)
+        {
+            if (richTextBoxOutput.InvokeRequired)
+            {
+                richTextBoxOutput.Invoke(new Action<string>(AppendToOutputWithoutTimestamp), message);
+                return;
+            }
+
+            richTextBoxOutput.AppendText($"{message}\n");
+            richTextBoxOutput.SelectionStart = richTextBoxOutput.TextLength;
             richTextBoxOutput.ScrollToCaret();
         }
+
 
         private void TriggerPathChanged()
         {
@@ -221,6 +234,7 @@ namespace UniversalByteRemover
             {
                 buttonProcess.Enabled = false;
                 buttonClear.Enabled = false;
+                richTextBoxOutput.Enabled = false;
 
                 try
                 {
@@ -251,6 +265,10 @@ namespace UniversalByteRemover
                 {
                     buttonProcess.Enabled = true;
                     buttonClear.Enabled = true;
+                    richTextBoxOutput.Enabled = true;
+
+                    richTextBoxOutput.SelectionStart = richTextBoxOutput.TextLength;
+                    richTextBoxOutput.ScrollToCaret();
                 }
             }
         }
@@ -280,19 +298,7 @@ namespace UniversalByteRemover
 
                 await Task.Run(() => File.WriteAllBytes(outputFilePath, resultBytes));
 
-                if (richTextBoxOutput.InvokeRequired)
-                {
-                    richTextBoxOutput.Invoke(new Action(() =>
-                    {
-                        richTextBoxOutput.Text += $"[{fileNumber}]处理完成，结果已保存到{outputFilePath}\n";
-                        richTextBoxOutput.ScrollToCaret();
-                    }));
-                }
-                else
-                {
-                    richTextBoxOutput.Text += $"[{fileNumber}]处理完成，结果已保存到{outputFilePath}\n";
-                    richTextBoxOutput.ScrollToCaret();
-                }
+                AppendToOutputWithoutTimestamp($"[{fileNumber}]处理完成，结果已保存到{outputFilePath}");
             }
             else
             {
