@@ -8,7 +8,9 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<SignAssembly>False</SignAssembly>
 		<GenerateDependencyFile>false</GenerateDependencyFile>
+		<SupportedOSPlatform>windows</SupportedOSPlatform>
 	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DebugType>embedded</DebugType>
 	</PropertyGroup>
